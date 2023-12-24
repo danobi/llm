@@ -9,6 +9,7 @@ import (
 	"path/filepath"
 
 	"github.com/google/generative-ai-go/genai"
+	"golang.org/x/term"
 	"google.golang.org/api/option"
 )
 
@@ -38,6 +39,23 @@ func key() (string, error) {
 	return string(key), nil
 }
 
+// Get input from user
+func input() (string, error) {
+	// Stdin is connected to terminal, meaning input was _not_ piped in
+	if term.IsTerminal(int(os.Stdin.Fd())) {
+		fmt.Fprintf(os.Stderr, "Reading from stdin...\n")
+		fmt.Fprintf(os.Stderr, "^C to cancel, ^D to send\n")
+	}
+
+	// Get input from stdin
+	in, err := io.ReadAll(os.Stdin)
+	if err != nil {
+		return "", fmt.Errorf("Failed to read stdin: %w", err)
+	}
+
+	return string(in), nil
+}
+
 func main() {
 	ctx := context.Background()
 
@@ -54,15 +72,14 @@ func main() {
 	}
 	defer client.Close()
 
-	// Get input from stdin
-	input, err := io.ReadAll(os.Stdin)
+	in, err := input()
 	if err != nil {
-		log.Fatal("Failed to read stdin: %v", err)
+		log.Fatal("Failed to get input: %v", err)
 	}
 
 	// Query model
 	model := client.GenerativeModel("models/gemini-pro")
-	resp, err := model.GenerateContent(ctx, genai.Text(input))
+	resp, err := model.GenerateContent(ctx, genai.Text(in))
 	if err != nil {
 		log.Fatal("Failed to generate response: %v", err)
 	}
