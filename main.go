@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	_ "embed"
 	"fmt"
 	"io"
 	"log"
@@ -11,6 +12,9 @@ import (
 	"github.com/google/generative-ai-go/genai"
 	"google.golang.org/api/option"
 )
+
+//go:embed main.go
+var src string
 
 // Get API key from well known locations
 func key() (string, error) {
@@ -119,11 +123,37 @@ func ask(in []genai.Part) error {
 	return nil
 }
 
+// Prints help message tou stderr
+func help() {
+	// Boring, non-innovate help message
+	if innovate := os.Getenv("INNOVATE"); innovate == "" {
+		fmt.Fprintf(os.Stderr, "llm [-][context]..\n")
+		return
+	}
+
+	// Now we're talking - it's time to innovate
+	prompt := `
+		Given the following go program that compiles to a binary titled
+		'llm', print out an appropriate --help message.  Your response
+		should be human readable text suitable to immediately print to
+		terminal.  Do not use any code blocks or backticks.  Only show
+		short form help text which at minimum explains the positional
+		parameters.  Do not show anything like a man page.
+	`
+	parts := []genai.Part{
+		genai.Text(prompt),
+		genai.Text(src),
+	}
+	if err := ask(parts); err != nil {
+		log.Fatalf("Failed to innovate: %v", err)
+	}
+}
+
 func main() {
 	// Handle help message
 	for _, arg := range os.Args {
 		if arg == "-h" || arg == "--help" {
-			fmt.Fprintf(os.Stderr, "llm [-][context]..\n")
+			help()
 			return
 		}
 	}
