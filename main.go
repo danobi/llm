@@ -100,27 +100,27 @@ func main() {
 	// Get API key
 	k, err := key()
 	if err != nil {
-		log.Fatal("Failed to get API key: %v", err)
+		log.Fatalf("Failed to get API key: %v", err)
 	}
 
 	// Create client given API key
 	client, err := genai.NewClient(ctx, option.WithAPIKey(k))
 	if err != nil {
-		log.Fatal("Failed to create genai client: %v", err)
+		log.Fatalf("Failed to create genai client: %v", err)
 	}
 	defer client.Close()
 
 	// Acquire input from user
 	in, err := input()
 	if err != nil {
-		log.Fatal("Failed to get input: %v", err)
+		log.Fatalf("Failed to get input: %v", err)
 	}
 
 	// Query model
 	model := client.GenerativeModel("models/gemini-pro")
 	resp, err := model.GenerateContent(ctx, in...)
 	if err != nil {
-		log.Fatal("Failed to generate response: %v", err)
+		log.Fatalf("Failed to generate response: %v", err)
 	}
 
 	// Parse response
