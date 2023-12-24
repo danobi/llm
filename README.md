@@ -4,10 +4,13 @@ Small CLI application to interact with [Gemini][0].
 
 ## Install
 
-`go install` to build and install `llm`.
+```
+$ go install github.com/danobi/llm@latest
+```
 
 You'll also need an API key (see link above). Provide it through environment
-variable `API_KEY` or put it on a single line in `~/.config/llm/key`.
+variable `API_KEY` or put it on a single line in `~/.config/llm/key`. API keys
+are currently free.
 
 ## Usage
 
