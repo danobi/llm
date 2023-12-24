@@ -33,3 +33,9 @@ The provided information appears to be a list of mounted file systems on a Linux
 ```
 
 [0]: https://ai.google.dev/
+
+## Doesn't this duplicate a lot of other projects?
+
+Yeah, sure. I didn't even look though b/c this literally took me 30 minutes
+to write. Also Gemini is free and I don't want to spend money on ChatGPT
+anymore.
