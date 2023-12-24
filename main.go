@@ -138,7 +138,8 @@ func help() {
 		should be human readable text suitable to immediately print to
 		terminal.  Do not use any code blocks or backticks.  Only show
 		short form help text which at minimum explains the positional
-		parameters.  Do not show anything like a man page.
+		parameters. Do not show anything like a man page but provide
+		at least a sentence or two.
 	`
 	parts := []genai.Part{
 		genai.Text(prompt),
