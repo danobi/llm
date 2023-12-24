@@ -9,7 +9,6 @@ import (
 	"path/filepath"
 
 	"github.com/google/generative-ai-go/genai"
-	"golang.org/x/term"
 	"google.golang.org/api/option"
 )
 
@@ -39,21 +38,52 @@ func key() (string, error) {
 	return string(key), nil
 }
 
-// Get input from user
-func input() (string, error) {
-	// Stdin is connected to terminal, meaning input was _not_ piped in
-	if term.IsTerminal(int(os.Stdin.Fd())) {
-		fmt.Fprintf(os.Stderr, "Reading from stdin...\n")
-		fmt.Fprintf(os.Stderr, "^C to cancel, ^D to send\n")
-	}
-
-	// Get input from stdin
+// Get all input from stdin
+func stdin() (string, error) {
 	in, err := io.ReadAll(os.Stdin)
 	if err != nil {
-		return "", fmt.Errorf("Failed to read stdin: %w", err)
+		return "", fmt.Errorf("failed to read stdin: %w", err)
 	}
 
 	return string(in), nil
+}
+
+// Get input from user
+func input() ([]genai.Part, error) {
+	// Handle all positional parameters
+	parts := make([]genai.Part, 0, 1)
+	nargs := len(os.Args)
+	for i := 1; i < nargs; i++ {
+		var part string
+		arg := os.Args[i]
+
+		if arg == "-" {
+			in, err := stdin()
+			if err != nil {
+				return nil, err
+			}
+			part = in
+		} else {
+			part = os.Args[i]
+		}
+
+		parts = append(parts, genai.Text(part))
+	}
+
+	// No params were passed, so we have to read from stdin
+	if len(parts) == 0 {
+		fmt.Fprintf(os.Stderr, "Reading from stdin...\n")
+		fmt.Fprintf(os.Stderr, "^C to cancel, ^D to send\n")
+
+		in, err := stdin()
+		if err != nil {
+			return nil, err
+		}
+
+		parts = append(parts, genai.Text(in))
+	}
+
+	return parts, nil
 }
 
 func main() {
@@ -79,7 +109,7 @@ func main() {
 
 	// Query model
 	model := client.GenerativeModel("models/gemini-pro")
-	resp, err := model.GenerateContent(ctx, genai.Text(in))
+	resp, err := model.GenerateContent(ctx, in...)
 	if err != nil {
 		log.Fatal("Failed to generate response: %v", err)
 	}
