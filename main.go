@@ -86,16 +86,9 @@ func input() ([]genai.Part, error) {
 	return parts, nil
 }
 
-func main() {
+// Queries model and prints out result to stdout if successful
+func ask(in []genai.Part) error {
 	ctx := context.Background()
-
-	// Handle help message
-	for _, arg := range os.Args {
-		if arg == "-h" || arg == "--help" {
-			fmt.Fprintf(os.Stderr, "llm [-][context]..\n")
-			return
-		}
-	}
 
 	// Get API key
 	k, err := key()
@@ -110,23 +103,39 @@ func main() {
 	}
 	defer client.Close()
 
+	// Query model
+	model := client.GenerativeModel("models/gemini-pro")
+	resp, err := model.GenerateContent(ctx, in...)
+	if err != nil {
+		return fmt.Errorf("Failed to generate response: %v", err)
+	}
+
+	// Parse response
+	if len(resp.Candidates) == 0 || len(resp.Candidates[0].Content.Parts) != 1 {
+		return fmt.Errorf("no response received")
+	}
+
+	fmt.Println(resp.Candidates[0].Content.Parts[0])
+	return nil
+}
+
+func main() {
+	// Handle help message
+	for _, arg := range os.Args {
+		if arg == "-h" || arg == "--help" {
+			fmt.Fprintf(os.Stderr, "llm [-][context]..\n")
+			return
+		}
+	}
+
 	// Acquire input from user
 	in, err := input()
 	if err != nil {
 		log.Fatalf("Failed to get input: %v", err)
 	}
 
-	// Query model
-	model := client.GenerativeModel("models/gemini-pro")
-	resp, err := model.GenerateContent(ctx, in...)
-	if err != nil {
-		log.Fatalf("Failed to generate response: %v", err)
+	// Ask gemini
+	if err := ask(in); err != nil {
+		log.Fatal(err)
 	}
-
-	// Parse response
-	if len(resp.Candidates) == 0 || len(resp.Candidates[0].Content.Parts) != 1 {
-		fmt.Fprintf(os.Stderr, "No response received\n")
-		return
-	}
-	fmt.Println(resp.Candidates[0].Content.Parts[0])
 }
