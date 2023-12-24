@@ -18,6 +18,12 @@ Cat in hat
 $ echo "Give me a 3 word rhyme" | llm -
 Criss cross sauce
 
+$ llm
+Reading from stdin...
+^C to cancel, ^D to send
+Give me a 3 word rhyme
+Cat in hat
+
 $ llm "What is this file?" - < /proc/mounts
 The provided information appears to be a list of mounted file systems on a Linux system, along with their respective mount points, file system types, and mount options. Here's a breakdown of each file system:
 
