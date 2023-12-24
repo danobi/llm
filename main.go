@@ -89,6 +89,14 @@ func input() ([]genai.Part, error) {
 func main() {
 	ctx := context.Background()
 
+	// Handle help message
+	for _, arg := range os.Args {
+		if arg == "-h" || arg == "--help" {
+			fmt.Fprintf(os.Stderr, "llm [-][context]..\n")
+			return
+		}
+	}
+
 	// Get API key
 	k, err := key()
 	if err != nil {
@@ -102,6 +110,7 @@ func main() {
 	}
 	defer client.Close()
 
+	// Acquire input from user
 	in, err := input()
 	if err != nil {
 		log.Fatal("Failed to get input: %v", err)
