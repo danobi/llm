@@ -11,7 +11,7 @@ variable `API_KEY` or put it on a single line in `~/.config/llm/key`.
 
 ## Usage
 
-```shell
+```
 $ llm "Give me a 3 word rhyme"
 Cat in hat
 
