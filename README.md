@@ -11,7 +11,7 @@ variable `API_KEY` or put it on a single line in `~/.config/llm/key`.
 
 ## Usage
 
-```
+```shell
 $ llm "Give me a 3 word rhyme"
 Cat in hat
 
@@ -24,18 +24,8 @@ Reading from stdin...
 Give me a 3 word rhyme
 Cat in hat
 
-$ llm "What is this file?" - < /proc/mounts
-The provided information appears to be a list of mounted file systems on a Linux system, along with their respective mount points, file system types, and mount options. Here's a breakdown of each file system:
-
-1. **proc:**
-   - Mount point: /proc
-   - File system type: proc
-   - Options: rw,nosuid,nodev,noexec,relatime
-   - Description: The proc file system provides information about processes, system memory, and other kernel data structures. It is a pseudo file system that exists in memory and does not occupy any disk space.
-
-2. **sys:**
-   - Mount point: /sys
-[...]
+$ llm "What is this file?" - "Give me a 1 sentence answer" < /proc/mounts
+This is a list of filesystems currently mounted on the system.
 ```
 
 [0]: https://ai.google.dev/
