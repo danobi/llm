@@ -5,7 +5,7 @@ Small CLI application to interact with [Gemini][0].
 ## Install
 
 ```
-$ go install github.com/danobi/llm@latest
+$ go install github.com/danobi/llm@master
 ```
 
 You'll also need an API key (see link above). Provide it through environment
